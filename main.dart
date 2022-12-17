@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uas/detailguru.dart';
+import 'package:uas/detailsiswa.dart';
 import 'components/rounded_input_field.dart';
 import 'components/rounded_password_field.dart';
 import 'constant.dart';
 import 'package:http/http.dart' as http;
 
-import 'dashboard.dart';
+import 'dashboardguru.dart';
+import 'dashboardsiswa.dart';
 
 
 void main() {
@@ -30,9 +33,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/main',
       routes: {
         '/main' :(context) => Home(),
-        //'/details' :(context) => Detail(),
-        //'/add' :(context) => Add(),
-        '/dashboard':(context) => Dashboard(),
+        '/detailguru' :(context) => DetailGuru(),
+        '/detailsiswa' :(context) => DetailSiswa(),
+        '/dashboardguru':(context) => DashboardGuru(),
+        '/dashboardsiswa' :(context) => DashboardSiswa(),
       },      
     );
   }
@@ -58,7 +62,7 @@ class _HomeState extends State<Home> {
     return json.decode(json.encode(response.body));
   }*/
 
-  login() async {
+   login() async {
     
     var response = await http.post(
       Uri.parse('http://10.0.2.2/crm/login.php'),
@@ -71,15 +75,17 @@ class _HomeState extends State<Home> {
     
     var responseLogin = json.decode(response.body); 
     
-    if(responseLogin["success"]==true) {
-      //userFound = true;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login berhasil')));
-      Navigator.pushReplacementNamed(context, '/dashboard', arguments: user.text);
-      //Navigator.pushNamed(context, '/details', arguments: user.text);
-      //User userInfo = User.fromJson(responseLogin["userData"]);
-      
+    if(responseLogin[0]["id_role"] == "0") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login berhasil')));
+        Navigator.pushReplacementNamed(context, '/dashboardguru', arguments: user.text);
+       /*else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login berhasil')));
+        Navigator.pushReplacementNamed(context, '/dashboardsiswa', arguments: user.text);
+      }*/
+    } else if(responseLogin[0]["id_role"] == "1") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login berhasil')));
+        Navigator.pushReplacementNamed(context, '/dashboardsiswa', arguments: user.text);
     } else {
-      //userFound = false;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login gagal')));
     }
   }
@@ -92,22 +98,6 @@ class _HomeState extends State<Home> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          /*FutureBuilder<List>(
-            future: getData(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Text('Login gagal ada error');
-              } else {
-              if (snapshot.hasData) {
-                UserList(list: snapshot.data!);
-                return Text('');
-                //return UserList(list: snapshot.data!);
-              } else {
-                return const Center(child:  CircularProgressIndicator(),);
-              }
-              }
-            },
-          ),*/
           Text("Central Report App", style: TextStyle(fontSize: 24, color: Colors.white),),
           Text("Login Untuk Melanjutkan", style: TextStyle(fontSize: 12, color: Colors.white),),
           SvgPicture.asset(
@@ -115,28 +105,6 @@ class _HomeState extends State<Home> {
             height: size.height * 0.15,
             color: Colors.blue,
           ),
-          /*Container(
-            margin: EdgeInsets.all(10),
-            child: TextFormField(
-              controller: user,
-              decoration: InputDecoration(
-                  labelText: "username",
-                  hintText: "inputkan username",
-                  icon: Icon(Icons.person)
-                  ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.all(10),
-            child: TextFormField(
-              controller: pass,
-              decoration: InputDecoration(
-                  labelText: "password",
-                  hintText: "inputkan password",
-                  icon: Icon(Icons.lock)
-                  ),
-            ),
-          ),*/
           RoundedInputField(
             controller: user,
             hintText: "Username",
@@ -149,11 +117,6 @@ class _HomeState extends State<Home> {
             ),
             ElevatedButton(onPressed: (() {
               login();
-              // if(userFound == true) {
-                
-              // } else {
-                
-              // };
             }), child: Text('Login')),      
         ],
       ),

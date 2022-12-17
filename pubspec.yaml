@@ -38,7 +38,7 @@ dependencies:
   path_provider: any
   js: any
   http: ^0.13.5
-
+  syncfusion_flutter_calendar: ^20.3.60
 
 dev_dependencies:
   flutter_test:
